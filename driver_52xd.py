@@ -31,9 +31,9 @@ DEVICE_CONFIG = bytes.fromhex(
     "00980000009a000000d2000000d4000000d6000000d800000050000105d00000"
     "00700000007200785674003412200010402a0102042200012024003200800001"
     "005c000101560024205800010232000402660000027c00005882007f082a0182"
-    "072200012024001400800001405c00ea00560006145800040232000c02660000"
+    "072200012024001400800001405c00d900560006145800040232000c02660000"
     "027c000058820080082a0108005c000101540000016200080464001000660000"
-    "027c0000582a0108005c00e8005200080054000001660000027c00005820c50e")
+    "027c0000582a0108005c00ce005200080054000001660000027c00005820c539")
 
 DEVICE_POV_CONFIG = bytes.fromhex(
     "040f8d8d868697978f8f9b9b929296968c8c00000000000000000803a700a100"
@@ -128,20 +128,6 @@ def run_driver(device: goodix.Device):
         device.read_sensor_register(0x0000,
                                     4)  # Read chip ID (0x00a5 or 0x00a6)
 
-        otp = device.read_otp()
-
-        if len(otp) < 64:
-            raise ValueError("Invalid OTP")
-
-        # OTP 1: 4e4c4d31372e0000b9828da2a2d73e09
-        #        08196896800000ee6014a774a060b614
-        #        ea2704009b0056f007212723a1a7a300
-        #        00000000000000000000000083760000
-        # OTP 2: 4e4b35594c2e00002983759520190009
-        #        08274c96800000f0103cae6ea010593c
-        #        ea2f04009c0053f00729312ba8b0aa00
-        #        000000000000000000000000f3830000
-
         tls_client = socket.socket()
         tls_client.connect(("localhost", 4433))
 
@@ -156,13 +142,13 @@ def run_driver(device: goodix.Device):
             device.mcu_get_pov_image()
 
             device.mcu_switch_to_fdt_mode(
-                b"\x0d\x01\x27\x01\x21\x01\x27\x01"
-                b"\x23\x01\x00\x00\x00\x00\x00\x00"
+                b"\x0d\x01\x31\x01\x29\x01\x31\x01"
+                b"\x2d\x01\x00\x00\x00\x00\x00\x00"
                 b"\x00\x00\x00\x00\x00\x00\x00\x00"
                 b"\x00\x00\x00", False)
             device.mcu_switch_to_fdt_mode(
-                b"\x0d\x01\x27\x01\x21\x01\x27\x01"
-                b"\x23\x01\x00\x00\x00\x00\x00\x00"
+                b"\x0d\x01\x31\x01\x29\x01\x31\x01"
+                b"\x2d\x01\x00\x00\x00\x00\x00\x00"
                 b"\x00\x00\x00\x00\x00\x00\x00\x00"
                 b"\x00\x00\x01", True)
 
@@ -170,7 +156,7 @@ def run_driver(device: goodix.Device):
 
             tls_client.sendall(
                 device.mcu_get_image(
-                    b"\x01\x03\x27\x01\x21\x01\x27\x01\x23\x01",
+                    b"\x01\x03\x31\x01\x29\x01\x31\x01\x2d\x01",
                     goodix.FLAGS_TRANSPORT_LAYER_SECURITY_DATA)[9:])
 
             tool.write_pgm(
@@ -183,7 +169,7 @@ def run_driver(device: goodix.Device):
 
             tls_client.sendall(
                 device.mcu_get_image(
-                    b"\x81\x03\x27\x01\x21\x01\x27\x01\x23\x01",
+                    b"\x81\x03\x31\x01\x29\x01\x31\x01\x2d\x01",
                     goodix.FLAGS_TRANSPORT_LAYER_SECURITY_DATA)[9:])
 
             tool.write_pgm(
@@ -196,7 +182,7 @@ def run_driver(device: goodix.Device):
 
             tls_client.sendall(
                 device.mcu_get_image(
-                    b"\x81\x03\x18\x01\x12\x01\x18\x01\x14\x01",
+                    b"\x81\x03\x21\x01\x19\x01\x21\x01\x1d\x01",
                     goodix.FLAGS_TRANSPORT_LAYER_SECURITY_DATA)[9:])
 
             tool.write_pgm(
@@ -206,13 +192,13 @@ def run_driver(device: goodix.Device):
             device.write_sensor_register(0x022c, b"\x0a\x02")
 
             device.mcu_switch_to_fdt_mode(
-                b"\x8d\x01\x27\x01\x21\x01\x27\x01"
-                b"\x23\x01\x00\x00\x00\x00\x00\x00"
+                b"\x8d\x01\x31\x01\x29\x01\x31\x01"
+                b"\x2d\x01\x00\x00\x00\x00\x00\x00"
                 b"\x00\x00\x00\x00\x00\x00\x00\x00"
                 b"\x00\x00\x00", False)
             device.mcu_switch_to_fdt_mode(
-                b"\x8d\x01\x27\x01\x21\x01\x27\x01"
-                b"\x23\x01\x00\x00\x00\x00\x00\x00"
+                b"\x8d\x01\x31\x01\x29\x01\x31\x01"
+                b"\x2d\x01\x00\x00\x00\x00\x00\x00"
                 b"\x00\x00\x00\x00\x00\x00\x00\x00"
                 b"\x00\x00\x01", True)
 
@@ -220,7 +206,7 @@ def run_driver(device: goodix.Device):
 
             tls_client.sendall(
                 device.mcu_get_image(
-                    b"\x81\x03\x27\x01\x21\x01\x27\x01\x23\x01",
+                    b"\x81\x03\x31\x01\x29\x01\x31\x01\x2d\x01",
                     goodix.FLAGS_TRANSPORT_LAYER_SECURITY_DATA)[9:])
 
             tool.write_pgm(
@@ -230,13 +216,13 @@ def run_driver(device: goodix.Device):
             device.write_sensor_register(0x022c, b"\x0a\x02")
 
             device.mcu_switch_to_fdt_mode(
-                b"\x0d\x01\x27\x01\x21\x01\x27\x01"
-                b"\x23\x01\x00\x00\x00\x00\x00\x00"
+                b"\x0d\x01\x31\x01\x29\x01\x31\x01"
+                b"\x2d\x01\x00\x00\x00\x00\x00\x00"
                 b"\x00\x00\x00\x00\x00\x00\x00\x00"
                 b"\x00\x00\x00", False)
             device.mcu_switch_to_fdt_mode(
-                b"\x0d\x01\x27\x01\x21\x01\x27\x01"
-                b"\x23\x01\x00\x00\x00\x00\x00\x00"
+                b"\x0d\x01\x31\x01\x29\x01\x31\x01"
+                b"\x2d\x01\x00\x00\x00\x00\x00\x00"
                 b"\x00\x00\x00\x00\x00\x00\x00\x00"
                 b"\x00\x00\x01", True)
 
@@ -247,18 +233,18 @@ def run_driver(device: goodix.Device):
             device.query_mcu_state(b"\x01\x01\x01", False)
 
             device.mcu_switch_to_fdt_down(
-                b"\x9c\x01\x27\x01\x21\x01\x27\x01"
-                b"\x23\x01\x8d\x8d\x86\x86\x97\x97"
-                b"\x8f\x8f\x9b\x9b\x92\x92\x96\x96"
-                b"\x8c\x8c\x00\x00\x05\x03\xa7\x00"
-                b"\xa1\x00\xa7\x00\xa3\x00\x00", False)
+                b"\x9c\x01\x31\x01\x29\x01\x31\x01"
+                b"\x2d\x01\x8c\x8c\x89\x89\x95\x95"
+                b"\x8e\x8e\x93\x93\x90\x90\x90\x90"
+                b"\x8a\x8a\x00\x00\x05\x03\xac\x00"
+                b"\xa4\x00\xac\x00\xa8\x00\x00", False)
 
             device.mcu_switch_to_fdt_down(
-                b"\x9c\x01\x27\x01\x21\x01\x27\x01"
-                b"\x23\x01\x8d\x8d\x86\x86\x97\x97"
-                b"\x8f\x8f\x9b\x9b\x92\x92\x96\x96"
-                b"\x8c\x8c\x01\x00\x05\x03\xa7\x00"
-                b"\xa1\x00\xa7\x00\xa3\x00\x00", False)
+                b"\x9c\x01\x31\x01\x29\x01\x31\x01"
+                b"\x2d\x01\x8c\x8c\x89\x89\x95\x95"
+                b"\x8e\x8e\x93\x93\x90\x90\x90\x90"
+                b"\x8a\x8a\x01\x00\x05\x03\xac\x00"
+                b"\xa4\x00\xac\x00\xa8\x00\x00", False)
 
             device.mcu_switch_to_sleep_mode()
 
@@ -267,38 +253,38 @@ def run_driver(device: goodix.Device):
             device.query_mcu_state(b"\x01\x01\x01", False)
 
             device.mcu_switch_to_fdt_down(
-                b"\x9c\x01\x27\x01\x21\x01\x27\x01"
-                b"\x23\x01\x8d\x8d\x86\x86\x97\x97"
-                b"\x8f\x8f\x9b\x9b\x92\x92\x96\x96"
-                b"\x8c\x8c\x00\x00\x05\x03\xa7\x00"
-                b"\xa1\x00\xa7\x00\xa3\x00\x00", False)
+                b"\x9c\x01\x31\x01\x29\x01\x31\x01"
+                b"\x2d\x01\x8c\x8c\x89\x89\x95\x95"
+                b"\x8e\x8e\x93\x93\x90\x90\x90\x90"
+                b"\x8a\x8a\x00\x00\x05\x03\xac\x00"
+                b"\xa4\x00\xac\x00\xa8\x00\x00", False)
 
             print("Waiting for finger...")
 
             device.mcu_switch_to_fdt_down(
-                b"\x9c\x01\x27\x01\x21\x01\x27\x01"
-                b"\x23\x01\x8d\x8d\x86\x86\x97\x97"
-                b"\x8f\x8f\x9b\x9b\x92\x92\x96\x96"
-                b"\x8c\x8c\x01\x00\x05\x03\xa7\x00"
-                b"\xa1\x00\xa7\x00\xa3\x00\x00", True)
+                b"\x9c\x01\x31\x01\x29\x01\x31\x01"
+                b"\x2d\x01\x8c\x8c\x89\x89\x95\x95"
+                b"\x8e\x8e\x93\x93\x90\x90\x90\x90"
+                b"\x8a\x8a\x01\x00\x05\x03\xac\x00"
+                b"\xa4\x00\xac\x00\xa8\x00\x00", True)
 
             device.mcu_switch_to_fdt_mode(
-                b"\x0d\x01\x27\x01\x21\x01\x27\x01"
-                b"\x23\x01\x8d\x8d\x86\x86\x97\x97"
-                b"\x8f\x8f\x9b\x9b\x92\x92\x96\x96"
-                b"\x8c\x8c\x00", False)
+                b"\x0d\x01\x31\x01\x29\x01\x31\x01"
+                b"\x2d\x01\x8c\x8c\x89\x89\x95\x95"
+                b"\x8e\x8e\x93\x93\x90\x90\x90\x90"
+                b"\x8a\x8a\x00", False)
 
             device.mcu_switch_to_fdt_mode(
-                b"\x0d\x01\x27\x01\x21\x01\x27\x01"
-                b"\x23\x01\x8d\x8d\x86\x86\x97\x97"
-                b"\x8f\x8f\x9b\x9b\x92\x92\x96\x96"
-                b"\x8c\x8c\x01", True)
+                b"\x0d\x01\x31\x01\x29\x01\x31\x01"
+                b"\x2d\x01\x8c\x8c\x89\x89\x95\x95"
+                b"\x8e\x8e\x93\x93\x90\x90\x90\x90"
+                b"\x8a\x8a\x01", True)
 
             device.write_sensor_register(0x022c, b"\x05\x03")
 
             tls_client.sendall(
                 device.mcu_get_image(
-                    b"\x45\x03\xa7\x00\xa1\x00\xa7\x00\xa3\x00",
+                    b"\x45\x03\xb4\x00\xac\x00\xb4\x00\xb0\x00",
                     goodix.FLAGS_TRANSPORT_LAYER_SECURITY_DATA)[9:])
 
             tool.write_pgm(
